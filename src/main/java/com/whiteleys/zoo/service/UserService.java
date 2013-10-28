@@ -1,10 +1,13 @@
 package com.whiteleys.zoo.service;
 
+import com.whiteleys.zoo.domain.Animal;
 import com.whiteleys.zoo.domain.Sex;
 import com.whiteleys.zoo.domain.User;
 import org.joda.time.LocalDate;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A service for administering {@link com.whiteleys.zoo.domain.User users}.
@@ -52,4 +55,11 @@ public interface UserService {
      * @return true if a user with this username already exists, otherwise false
      */
     boolean exists(String username);
+
+	List<Animal> getUsersFavouriteAnimals(User user);
+	Set<Long> getUsersFavouriteAnimalsIds(User user);
+
+	User addFavouriteAnimal(User user, Animal animal);
+	User removeFavouriteAnimal(User user, Long animalIdToDelete);
+
 }

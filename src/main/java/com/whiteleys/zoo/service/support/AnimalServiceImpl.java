@@ -17,7 +17,11 @@ public class AnimalServiceImpl implements AnimalService {
         return animalDao.findAll();
     }
 
-    @Autowired
+	public Animal getAnimal(Long id) {
+		return animalDao.findAnimalById(id);
+	}
+
+	@Autowired
     public void setAnimalDao(AnimalDao animalDao) {
         this.animalDao = animalDao;
     }

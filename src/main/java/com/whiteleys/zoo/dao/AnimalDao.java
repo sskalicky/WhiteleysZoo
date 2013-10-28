@@ -13,4 +13,6 @@ public interface AnimalDao {
      */
     List<Animal> findAll();
 
+	Animal findAnimalById(Long id);
+
 }

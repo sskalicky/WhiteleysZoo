@@ -1,6 +1,10 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <div id="userForm">
+		<c:if test="${not empty requestScope.loginFailed}">
+			<span class="redBold"><c:out value="${loginFailed}"/></span>
+		</c:if>
     <form:form action="login.html" commandName="userCommand" method="POST">
         <table>
             <tbody>

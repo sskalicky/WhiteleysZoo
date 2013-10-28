@@ -1,7 +1,9 @@
 package com.whiteleys.zoo.web.controller;
 
 import com.whiteleys.zoo.domain.Animal;
+import com.whiteleys.zoo.domain.User;
 import com.whiteleys.zoo.service.AnimalService;
+import com.whiteleys.zoo.service.UserService;
 import com.whiteleys.zoo.web.Tiles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,8 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
-import java.util.Collections;
+import java.util.*;
 
 /**
  * The controller that deals with all non-form processing requests that can be submitted by a user.
@@ -20,6 +21,7 @@ import java.util.Collections;
 public class UserController {
 
     private AnimalService animalService;
+	private UserService userService;
 
     /**
      * Proceed to the home page that shows all a user's favorites.
@@ -30,8 +32,8 @@ public class UserController {
     @RequestMapping("/home.html")
     public ModelAndView home(HttpSession session) {
 
-        // TODO Get the favourites for the logged-in user
-        List<Animal> favourites = Collections.EMPTY_LIST;
+	    User user = (User)session.getAttribute("user");
+	    List<Animal> favourites = userService.getUsersFavouriteAnimals(user);
 
         return new ModelAndView(Tiles.HOME)
                 .addObject("favourites", favourites);
@@ -61,11 +63,11 @@ public class UserController {
         // retrieve a list of all the image files that are available
         List<Animal> allAnimals = animalService.getAllAnimals();
 
-        // TODO populate list of the user's favourite animals
-        List<Animal> favouriteAnimals = Collections.EMPTY_LIST;
+	    User user = (User)session.getAttribute("user");
+	    Set<Long> favouriteAnimalsIds = userService.getUsersFavouriteAnimalsIds(user);
 
         return new ModelAndView(Tiles.GALLERY)
-                .addObject("favourites", favouriteAnimals)
+                .addObject("favourites", favouriteAnimalsIds)
                 .addObject("allAnimals", allAnimals);
     }
 
@@ -79,7 +81,9 @@ public class UserController {
     @RequestMapping("/addFavourite.html")
     public ModelAndView addFavourite(HttpSession session, @RequestParam Long animalId) {
 
-        // TODO - add favourite
+	    User user = (User)session.getAttribute("user");
+	    Animal animal = animalService.getAnimal(animalId);
+	    userService.addFavouriteAnimal(user, animal);
 
         return new ModelAndView("redirect:/gallery.html");
     }
@@ -101,7 +105,8 @@ public class UserController {
 
         boolean redirectToGallery = (gallery != null && gallery);
 
-        // TODO Remove favourite
+	    User user = (User)session.getAttribute("user");
+	    userService.removeFavouriteAnimal(user, animalId);
 
         return new ModelAndView(
                 redirectToGallery ? "redirect:/gallery.html" : "redirect:/home.html");
@@ -111,5 +116,10 @@ public class UserController {
     public void setAnimalsService(AnimalService animalService) {
         this.animalService = animalService;
     }
+
+	@Autowired
+	public void setUserService(UserService userService) {
+		this.userService = userService;
+	}
 
 }

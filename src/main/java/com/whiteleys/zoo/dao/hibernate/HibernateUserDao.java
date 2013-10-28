@@ -8,10 +8,13 @@ import java.util.List;
 
 public class HibernateUserDao extends HibernateDaoSupport implements UserDao {
 
-
-    public void save(User user) {
+	public void save(User user) {
         getHibernateTemplate().save(user);
     }
+
+	public void update(User user) {
+		getHibernateTemplate().update(user);
+	}
 
     public User find(String username, String password) {
         List<User> user = getHibernateTemplate().find("FROM User WHERE username = ? AND password = ?", new Object[] {username, password});

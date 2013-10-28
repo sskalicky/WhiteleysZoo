@@ -4,6 +4,7 @@ import com.whiteleys.zoo.domain.User;
 import com.whiteleys.zoo.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
@@ -27,6 +28,7 @@ import java.util.Map;
 public class LoginController {
 
     private UserService userService;
+	private MessageSource messageSource;
 
     @RequestMapping(method = RequestMethod.GET)
     public String formBackingObject(Map model) throws Exception {
@@ -35,14 +37,17 @@ public class LoginController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public String submit(HttpServletRequest request, @ModelAttribute("userCommand") User command) throws Exception {
+    public ModelAndView submit(HttpServletRequest request, @ModelAttribute("userCommand") User command) throws Exception {
 
-        User user = userService.getUser(command.getUsername(), command.getPassword());
+        try{
+		    User user = userService.getUser(command.getUsername(), command.getPassword());
+			// put the user into the session to indicate logged in status
+	        request.getSession().setAttribute("user", user);
+        } catch (IllegalArgumentException e){
+	        return new ModelAndView("login").addObject("loginFailed", messageSource.getMessage("login.failed", null, null));
+        }
 
-        // put the user into the session to indicate logged in status
-        request.getSession().setAttribute("user", user);
-
-        return "redirect:/home.html";
+        return new ModelAndView("redirect:/home.html");
     }
 
     @Autowired
@@ -50,5 +55,9 @@ public class LoginController {
         this.userService = userService;
     }
 
+	@Autowired
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
 
 }

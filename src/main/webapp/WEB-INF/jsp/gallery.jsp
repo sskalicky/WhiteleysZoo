@@ -12,7 +12,7 @@
     <p>
         <span><img src="gallery/${animal.filename}" alt="${animal.filename}"></span>
         <c:choose>
-            <c:when test="${requestScope.favourites[animal.id]}">
+            <c:when test="${fn:contains(requestScope.favourites, animal.id)}">
                 <a href="removeFavourite.html?animalId=${animal.id}&gallery=true">
                     <img src="images/hotStar.png" alt="Remove from favourites"/>
                 </a>

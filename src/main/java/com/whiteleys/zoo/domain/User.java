@@ -3,7 +3,7 @@ package com.whiteleys.zoo.domain;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.*;
 
-import java.util.Date;
+import java.util.*;
 import java.io.Serializable;
 
 /**
@@ -21,7 +21,9 @@ public class User implements Serializable {
     private transient Integer dobYear;
     private Date dateOfBirth;
     private String postcode;
-    private transient com.whiteleys.zoo.domain.Sex sex;
+    private Sex sex;
+
+	private List<Animal> favouriteAnimals = new ArrayList<Animal>();
 
 
     public Integer getDobDay() {
@@ -93,8 +95,8 @@ public class User implements Serializable {
     /**
      * @return the user's sex
      */
-    //@Column(name="sex", nullable = false, length = 1)
-    public com.whiteleys.zoo.domain.Sex getSex() {
+    @Column(name="sex", nullable = false, length = 1)
+    public Sex getSex() {
         return sex;
     }
 
@@ -106,9 +108,15 @@ public class User implements Serializable {
         return postcode;
     }
 
+	@ManyToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinTable(name = "USER_ANIMAL",
+		joinColumns = {@JoinColumn(referencedColumnName = "id")},
+		inverseJoinColumns = {@JoinColumn(referencedColumnName = "id")})
+	public List<Animal> getFavouriteAnimals() {
+		return favouriteAnimals;
+	}
 
-
-    // Setters
+	// Setters
     public void setUserId(Long userId) {
         this.userId = userId;
     }
@@ -133,7 +141,11 @@ public class User implements Serializable {
         this.postcode = postcode;
     }
 
-    public String getPassword2() {
+	public void setFavouriteAnimals(List<Animal> favouriteAnimals) {
+		this.favouriteAnimals = favouriteAnimals;
+	}
+
+	public String getPassword2() {
         return password2;
     }
 
